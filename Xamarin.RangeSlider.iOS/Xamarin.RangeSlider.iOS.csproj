@@ -50,47 +50,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\slider-default_trackBackground%402x.png" />
     <BundleResource Include="Resources\slider-default-handle-disabled.png" />
-    <BundleResource Include="Resources\slider-default7-handle-disabled.png" />
     <BundleResource Include="Resources\slider-default-handle-disabled%402x.png" />
-    <BundleResource Include="Resources\slider-default7-handle-disabled%402x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\slider-default7-handle.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\slider-default7-handle%402x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\slider-default7-track.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\slider-default7-track%402x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\slider-default7-trackBackground.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\slider-default7-trackBackground%402x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\slider-default7-trackCrossedOver.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\slider-default7-trackCrossedOver%402x.png" />
+    <BundleResource Include="Resources\slider-default-trackBackground%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\slider-default-handle.png" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\slider-default-handle%402x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\slider-default-handle-highlighted.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\slider-default-handle-highlighted%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\slider-default-track.png" />
