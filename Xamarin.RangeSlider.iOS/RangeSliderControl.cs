@@ -14,7 +14,7 @@ namespace Xamarin.RangeSlider
     {
         public const int TextLateralPadding = 5;
 
-        public const int BarHeight = 2;
+        public const float BarHeight = 2;
 
         private UIImageView _lowerHandle;
 
@@ -559,7 +559,7 @@ namespace Xamarin.RangeSlider
                               (MaximumValue - MinimumValue) + upperHandleWidth / 2.0f;
 
             retValue.X = xLowerValue;
-            retValue.Y = Bounds.Size.Height / 2.0f - retValue.Size.Height;
+            retValue.Y = Bounds.Size.Height / 2f - retValue.Size.Height / 2f + SpaceAboveThumbs / 2f;
             retValue.Width = xUpperValue - xLowerValue;
 
             var alignmentInsets = TrackAlignmentInsets();
@@ -576,7 +576,7 @@ namespace Xamarin.RangeSlider
             };
 
             rect.X = 0;
-            rect.Y = Bounds.Size.Height / 2.0f - rect.Size.Height;
+            rect.Y = Bounds.Size.Height / 2f - rect.Size.Height / 2f + SpaceAboveThumbs / 2f;
 
             var alignmentInsets = TrackAlignmentInsets();
             rect = alignmentInsets.InsetRect(rect);
@@ -594,10 +594,10 @@ namespace Xamarin.RangeSlider
 
             var leftOffset = Math.Max(lowerOffset, upperOffset);
             var rightOffset = leftOffset;
-            //var topOffset = (float)lowerAlignmentInsets.Top;
-            //var bottomOffset = (float)lowerAlignmentInsets.Bottom;
+            var topOffset = (float)lowerAlignmentInsets.Top;
+            var bottomOffset = (float)lowerAlignmentInsets.Bottom;
 
-            return new UIEdgeInsets(0, leftOffset, 0, rightOffset);
+            return new UIEdgeInsets(topOffset, leftOffset, bottomOffset, rightOffset);
         }
 
         /// <summary>
