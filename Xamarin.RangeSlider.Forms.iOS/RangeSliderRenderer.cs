@@ -57,6 +57,8 @@ namespace Xamarin.RangeSlider.Forms
             control.TextFormat = element.TextFormat;
             if (element.TextColor != Color.Default)
                 control.TextColor = element.TextColor.ToUIColor();
+            if (element.ActiveColor != Color.Default)
+                control.TrackColor = element.ActiveColor.ToUIColor();
             control.FormatLabel = element.FormatLabel;
         }
 
@@ -103,6 +105,10 @@ namespace Xamarin.RangeSlider.Forms
                 case RangeSlider.TextColorPropertyName:
                     if (Element.TextColor != Color.Default)
                         Control.TextColor = Element.TextColor.ToUIColor();
+                    break;
+                case RangeSlider.ActiveColorPropertyName:
+                    if (Element.ActiveColor != Color.Default)
+                        Control.TrackColor = Element.ActiveColor.ToUIColor();
                     break;
                 case RangeSlider.FormatLabelPropertyName:
                     Control.FormatLabel = Element.FormatLabel;

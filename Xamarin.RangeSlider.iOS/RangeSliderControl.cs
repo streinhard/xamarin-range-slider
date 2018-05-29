@@ -69,7 +69,8 @@ namespace Xamarin.RangeSlider
         private float _stepValue;
         private bool _stepValueContinuously;
         private float _upperValue;
-
+        private UIColor _trackColor = UIColor.FromRGB(0, 122, 255);
+        private UIColor _trackBackgroundColor = UIColor.FromRGB(182, 182, 182);
 
         public RangeSliderControl()
         {
@@ -284,6 +285,30 @@ namespace Xamarin.RangeSlider
             set
             {
                 _textColor = value;
+                SetNeedsLayout();
+            }
+        }
+
+        [Export("TrackColor")]
+        [Browsable(true)]
+        public UIColor TrackColor
+        {
+            get { return _trackColor; }
+            set
+            {
+                _trackColor = value;
+                SetNeedsLayout();
+            }
+        }
+
+        [Export("TrackBackgroundColor")]
+        [Browsable(true)]
+        public UIColor TrackBackgroundColor
+        {
+            get { return _trackBackgroundColor; }
+            set
+            {
+                _trackBackgroundColor = value;
                 SetNeedsLayout();
             }
         }
@@ -660,7 +685,7 @@ namespace Xamarin.RangeSlider
             _track = new UIView
             {
                 Frame = TrackRect(),
-                BackgroundColor = UIColor.FromRGB(0, 122, 255)
+                BackgroundColor = _trackColor
             };
 
             //------------------------------
@@ -668,7 +693,7 @@ namespace Xamarin.RangeSlider
             _trackBackground = new UIView
             {
                 Frame = TrackBackgroundRect(),
-                BackgroundColor = UIColor.FromRGB(182, 182, 182)
+                BackgroundColor = _trackBackgroundColor
             };
 
             _lowerHandleLabel = new UILabel
@@ -710,6 +735,9 @@ namespace Xamarin.RangeSlider
             base.LayoutSubviews();
 
             _trackBackground.Frame = TrackBackgroundRect();
+            _trackBackground.BackgroundColor = _trackBackgroundColor;
+
+            _track.BackgroundColor = _trackColor;
             _track.Frame = TrackRect();
 
             // Layout the lower handle
