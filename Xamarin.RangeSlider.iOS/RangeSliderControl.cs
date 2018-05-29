@@ -14,21 +14,21 @@ namespace Xamarin.RangeSlider
     {
         public const int TextLateralPadding = 5;
 
+        public const int BarHeight = 2;
+
         private UIImageView _lowerHandle;
 
         private bool _lowerHandleHidden;
 
         private float _lowerHandleHiddenWidth;
-        private UIImage _lowerHandleImageHighlighted;
 
         // Images, these should be set before the control is displayed.
         // If they are not set, then the default images are used.
         // eg viewDidLoad
 
-
         //Probably should add support for all control states... Anyone?
 
-        private UIImage _lowerHandleImageNormal;
+        private UIImage _lowerHandleImage;
 
         // maximum value for left thumb
         private float _lowerMaximumValue;
@@ -38,24 +38,14 @@ namespace Xamarin.RangeSlider
         private float _lowerTouchOffset;
         private float _stepValueInternal;
 
-        private UIImageView _track;
-        private UIImageView _trackBackground;
-
-        private UIImage _trackBackgroundImage;
-
-        /// <summary>
-        ///     track image when lower value is higher than the upper value (eg. when minimum range is negative)
-        /// </summary>
-        private UIImage _trackCrossedOverImage;
-
-        private UIImage _trackImage;
+        private UIView _track;
+        private UIView _trackBackground;
 
         private UIImageView _upperHandle;
         private bool _upperHandleHidden;
         private float _upperHandleHiddenWidth;
-        private UIImage _upperHandleImageHighlighted;
 
-        private UIImage _upperHandleImageNormal;
+        private UIImage _upperHandleImage;
 
         /// <summary>
         ///     minimum value for right thumb
@@ -309,56 +299,10 @@ namespace Xamarin.RangeSlider
             set
             {
                 base.Enabled = value;
-                _lowerHandleImageNormal = null;
-                _upperHandleImageNormal = null;
+                _lowerHandleImage = null;
+                _upperHandleImage = null;
                 _track.Alpha = Enabled ? 1f : 0.2f;
                 SetNeedsLayout();
-            }
-        }
-
-        private UIImage TrackBackgroundImage
-        {
-            get
-            {
-                if (_trackBackgroundImage != null)
-                    return _trackBackgroundImage;
-
-                var image = ImageFromBundle(@"slider-default-trackBackground");
-                image = image.CreateResizableImage(new UIEdgeInsets(0.0f, 2.0f, 0.0f, 2.0f));
-                _trackBackgroundImage = image;
-
-                return _trackBackgroundImage;
-            }
-        }
-
-        private UIImage TrackImage
-        {
-            get
-            {
-                if (_trackImage != null)
-                    return _trackImage;
-
-                var image = ImageFromBundle(@"slider-default-track");
-                image = image.CreateResizableImage(new UIEdgeInsets(0.0f, 2.0f, 0.0f, 2.0f));
-                image = image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
-                _trackImage = image;
-
-                return _trackImage;
-            }
-        }
-
-        private UIImage TrackCrossedOverImage
-        {
-            get
-            {
-                if (_trackCrossedOverImage != null)
-                    return _trackCrossedOverImage;
-
-                var image = ImageFromBundle(@"slider-default-trackCrossedOver");
-                image = image.CreateResizableImage(new UIEdgeInsets(0.0f, 2.0f, 0.0f, 2.0f));
-                _trackCrossedOverImage = image;
-
-                return _trackCrossedOverImage;
             }
         }
 
@@ -366,13 +310,13 @@ namespace Xamarin.RangeSlider
         {
             get
             {
-                if (_lowerHandleImageNormal != null)
-                    return _lowerHandleImageNormal;
+                if (_lowerHandleImage != null)
+                    return _lowerHandleImage;
 
                 var image = ImageFromBundle(Enabled ? @"slider-default-handle" : @"slider-default-handle-disabled");
-                _lowerHandleImageNormal = image.ImageWithAlignmentRectInsets(new UIEdgeInsets(-1, 8, 1, 8));
+                _lowerHandleImage = image.ImageWithAlignmentRectInsets(new UIEdgeInsets(-1, 8, 1, 8));
 
-                return _lowerHandleImageNormal;
+                return _lowerHandleImage;
             }
         }
 
@@ -380,17 +324,15 @@ namespace Xamarin.RangeSlider
         {
             get
             {
-                if (_upperHandleImageNormal != null)
-                    return _upperHandleImageNormal;
+                if (_upperHandleImage != null)
+                    return _upperHandleImage;
 
                 var image = ImageFromBundle(Enabled ? @"slider-default-handle" : @"slider-default-handle-disabled");
-                _upperHandleImageNormal = image.ImageWithAlignmentRectInsets(new UIEdgeInsets(-1, 8, 1, 8));
+                _upperHandleImage = image.ImageWithAlignmentRectInsets(new UIEdgeInsets(-1, 8, 1, 8));
 
-                return _upperHandleImageNormal;
+                return _upperHandleImage;
             }
         }
-
-        private UIImage TrackImageForCurrentValues => LowerValue <= UpperValue ? TrackImage : TrackCrossedOverImage;
 
         public override CGSize IntrinsicContentSize => new CGSize(NoIntrinsicMetric,
             Math.Max(LowerHandleImage.Size.Height, UpperHandleImage.Size.Height) + SpaceAboveThumbs);
@@ -583,22 +525,6 @@ namespace Xamarin.RangeSlider
                 : func(thumb, value);
         }
 
-        private UIEdgeInsets TrackAlignmentInsets()
-        {
-            var lowerAlignmentInsets = LowerHandleImage.AlignmentRectInsets;
-            var upperAlignmentInsets = UpperHandleImage.AlignmentRectInsets;
-
-            var lowerOffset = Math.Max((float)lowerAlignmentInsets.Right, (float)upperAlignmentInsets.Left);
-            var upperOffset = Math.Max((float)upperAlignmentInsets.Right, (float)lowerAlignmentInsets.Left);
-
-            var leftOffset = Math.Max(lowerOffset, upperOffset);
-            var rightOffset = leftOffset;
-            var topOffset = (float)lowerAlignmentInsets.Top;
-            var bottomOffset = (float)lowerAlignmentInsets.Bottom;
-
-            return new UIEdgeInsets(topOffset, leftOffset, bottomOffset, rightOffset);
-        }
-
         private static CGSize GetTextAboveThumbSize(UILabel label)
         {
             return label.SizeThatFits(new CGSize(float.MaxValue, float.MaxValue));
@@ -618,16 +544,7 @@ namespace Xamarin.RangeSlider
         {
             var retValue = new CGRect();
 
-            var currentTrackImage = TrackImageForCurrentValues;
-
-            retValue.Size = new CGSize(currentTrackImage.Size.Width, currentTrackImage.Size.Height);
-
-            var height = Bounds.Size.Height - SpaceAboveThumbs;
-            if (Math.Abs(currentTrackImage.CapInsets.Top) > float.Epsilon ||
-                Math.Abs(currentTrackImage.CapInsets.Bottom) > float.Epsilon)
-            {
-                retValue.Height = height;
-            }
+            retValue.Size = new CGSize(0, BarHeight);
 
             var lowerHandleWidth = _lowerHandleHidden
                 ? _lowerHandleHiddenWidth
@@ -642,7 +559,7 @@ namespace Xamarin.RangeSlider
                               (MaximumValue - MinimumValue) + upperHandleWidth / 2.0f;
 
             retValue.X = xLowerValue;
-            retValue.Y = SpaceAboveThumbs + height / 2.0f - retValue.Size.Height / 2.0f;
+            retValue.Y = Bounds.Size.Height / 2.0f - retValue.Size.Height;
             retValue.Width = xUpperValue - xLowerValue;
 
             var alignmentInsets = TrackAlignmentInsets();
@@ -655,32 +572,32 @@ namespace Xamarin.RangeSlider
         {
             var rect = new CGRect
             {
-                Size = new CGSize(TrackBackgroundImage.Size.Width, TrackBackgroundImage.Size.Height)
+                Size = new CGSize(Bounds.Size.Width, BarHeight)
             };
 
-
-            var height = Bounds.Size.Height - SpaceAboveThumbs;
-            if (Math.Abs(TrackBackgroundImage.CapInsets.Top) > float.Epsilon ||
-                Math.Abs(TrackBackgroundImage.CapInsets.Bottom) > float.Epsilon)
-            {
-                rect.Height = height;
-            }
-
-            if (Math.Abs(TrackBackgroundImage.CapInsets.Left) > float.Epsilon ||
-                Math.Abs(TrackBackgroundImage.CapInsets.Right) > float.Epsilon)
-            {
-                rect.Width = Bounds.Size.Width;
-            }
-
             rect.X = 0;
-            rect.Y = SpaceAboveThumbs + height / 2.0f - rect.Size.Height / 2.0f;
-
-            // Adjust the track rect based on the image alignment rects
+            rect.Y = Bounds.Size.Height / 2.0f - rect.Size.Height;
 
             var alignmentInsets = TrackAlignmentInsets();
             rect = alignmentInsets.InsetRect(rect);
 
             return Normalise(rect);
+        }
+
+        private UIEdgeInsets TrackAlignmentInsets()
+        {
+            var lowerAlignmentInsets = LowerHandleImage.AlignmentRectInsets;
+            var upperAlignmentInsets = UpperHandleImage.AlignmentRectInsets;
+
+            var lowerOffset = Math.Max((float)lowerAlignmentInsets.Right, (float)upperAlignmentInsets.Left);
+            var upperOffset = Math.Max((float)upperAlignmentInsets.Right, (float)lowerAlignmentInsets.Left);
+
+            var leftOffset = Math.Max(lowerOffset, upperOffset);
+            var rightOffset = leftOffset;
+            //var topOffset = (float)lowerAlignmentInsets.Top;
+            //var bottomOffset = (float)lowerAlignmentInsets.Bottom;
+
+            return new UIEdgeInsets(0, leftOffset, 0, rightOffset);
         }
 
         /// <summary>
@@ -740,11 +657,19 @@ namespace Xamarin.RangeSlider
 
             //------------------------------
             // Track
-            _track = new UIImageView(TrackImageForCurrentValues) { Frame = TrackRect() };
+            _track = new UIView
+            {
+                Frame = TrackRect(),
+                BackgroundColor = UIColor.FromRGB(0, 122, 255)
+            };
 
             //------------------------------
             // Track Brackground
-            _trackBackground = new UIImageView(TrackBackgroundImage) { Frame = TrackBackgroundRect() };
+            _trackBackground = new UIView
+            {
+                Frame = TrackBackgroundRect(),
+                BackgroundColor = UIColor.FromRGB(182, 182, 182)
+            };
 
             _lowerHandleLabel = new UILabel
             {
@@ -786,7 +711,6 @@ namespace Xamarin.RangeSlider
 
             _trackBackground.Frame = TrackBackgroundRect();
             _track.Frame = TrackRect();
-            _track.Image = TrackImageForCurrentValues;
 
             // Layout the lower handle
             _lowerHandle.Frame = ThumbRectForValue(LowerValue, LowerHandleImage);
